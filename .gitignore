@@ -16,9 +16,24 @@ dist-ssr
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
+# User-specific files
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# Rust / Tauri
+src-tauri/target/
+src-tauri/gen/schemas/
+src-tauri/gen/android/
+src-tauri/gen/apple/
+target/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Environment
+.env
+.env.*
