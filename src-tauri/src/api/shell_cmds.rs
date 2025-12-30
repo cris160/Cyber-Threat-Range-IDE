@@ -39,7 +39,7 @@ lazy_static::lazy_static! {
 }
 
 #[tauri::command]
-pub async fn create_terminal_session(cwd: Option<String>) -> Result<TerminalSession, String> {
+pub async fn create_terminal_session(cwd: Option<String>, shell: Option<String>) -> Result<TerminalSession, String> {
     let session_id = Uuid::new_v4().to_string();
     
     let pty_system = NativePtySystem::default();
@@ -54,10 +54,23 @@ pub async fn create_terminal_session(cwd: Option<String>) -> Result<TerminalSess
         })
         .map_err(|e| format!("Failed to create PTY: {}", e))?;
         
-    // Determine shell based on OS
-    let (shell, shell_args): (&str, Vec<&str>) = if cfg!(target_os = "windows") {
-        // Use PowerShell with minimal args
-        ("powershell.exe", vec!["-NoLogo", "-NoProfile"])
+    // Determine shell based on parameter or OS default
+    let (shell_path, shell_args): (&str, Vec<&str>) = if cfg!(target_os = "windows") {
+        match shell.as_deref() {
+            Some("cmd") => ("cmd.exe", vec![]),
+            Some("git-bash") => {
+                // Try common Git Bash locations
+                if std::path::Path::new("C:\\Program Files\\Git\\bin\\bash.exe").exists() {
+                    ("C:\\Program Files\\Git\\bin\\bash.exe", vec!["--login", "-i"])
+                } else if std::path::Path::new("C:\\Program Files (x86)\\Git\\bin\\bash.exe").exists() {
+                    ("C:\\Program Files (x86)\\Git\\bin\\bash.exe", vec!["--login", "-i"])
+                } else {
+                    // Fallback to PowerShell if Git Bash not found
+                    ("powershell.exe", vec!["-NoLogo", "-NoProfile"])
+                }
+            }
+            _ => ("powershell.exe", vec!["-NoLogo", "-NoProfile"]) // Default to PowerShell
+        }
     } else if cfg!(target_os = "macos") {
         ("/bin/zsh", vec!["-l"])
     } else {
@@ -76,7 +89,7 @@ pub async fn create_terminal_session(cwd: Option<String>) -> Result<TerminalSess
     });
     
     // Create command
-    let mut cmd = CommandBuilder::new(shell);
+    let mut cmd = CommandBuilder::new(shell_path);
     for arg in &shell_args {
         cmd.arg(*arg);
     }
@@ -130,7 +143,7 @@ pub async fn create_terminal_session(cwd: Option<String>) -> Result<TerminalSess
         master,
         output_buffer,
         cwd: working_dir.clone(),
-        shell: shell.to_string(),
+        shell: shell_path.to_string(),
     };
     
     let mut sessions = SESSIONS.lock().unwrap();
@@ -138,7 +151,7 @@ pub async fn create_terminal_session(cwd: Option<String>) -> Result<TerminalSess
     
     Ok(TerminalSession {
         id: session_id,
-        shell: shell.to_string(),
+        shell: shell_path.to_string(),
         cwd: working_dir,
     })
 }

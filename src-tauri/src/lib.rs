@@ -1,5 +1,6 @@
 mod api;
 mod services;
+mod analysis;
 
 use api::{
   editor_cmds,
@@ -11,12 +12,16 @@ use api::{
   interactive_runner,
   security_cmds,
   exploit_cmds,
+  extension_cmds,
+  search_cmds,
+  prover_cmds,
 };
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
     .plugin(tauri_plugin_dialog::init())
+    .plugin(tauri_plugin_shell::init())
     .setup(|app| {
       if cfg!(debug_assertions) {
         app.handle().plugin(
@@ -81,10 +86,28 @@ pub fn run() {
       // Security commands
       security_cmds::scan_file_for_issues,
       security_cmds::run_security_scan,
+      security_cmds::fetch_juice_shop_challenges,
       // Exploit commands
       exploit_cmds::get_exploit_payloads,
       exploit_cmds::run_exploit_simulation,
       exploit_cmds::run_exploit_with_custom_payload,
+      // Extension commands
+      extension_cmds::fetch_marketplace,
+      extension_cmds::search_marketplace,
+      extension_cmds::get_extension_details,
+      extension_cmds::install_from_marketplace,
+      extension_cmds::list_installed_extensions,
+      extension_cmds::enable_extension,
+      extension_cmds::disable_extension,
+      extension_cmds::uninstall_extension,
+      // Search commands
+      search_cmds::search_in_files,
+      search_cmds::replace_in_files,
+      // Exploit Prover commands
+      prover_cmds::prove_exploitability,
+      prover_cmds::quick_scan_sinks,
+      prover_cmds::index_workspace,
+      prover_cmds::analyze_cross_file,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

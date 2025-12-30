@@ -1,5 +1,6 @@
-import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import { getCurrentWindow } from '@tauri-apps/api/window';
 import { HackerModeToggle } from './HackerModeToggle';
 
 interface MenuBarProps {
@@ -195,59 +196,128 @@ export function MenuBar({
 
   return (
     <>
-      <div ref={menuRef} className="h-9 bg-[#323233] border-b border-[#2D2D30] flex items-center justify-between px-2">
-        {/* Left side - Menu items */}
-        <div className="flex items-center">
+      <div
+        ref={menuRef}
+        className="flex items-center select-none"
+        style={{ height: '30px', backgroundColor: '#3c3c3c' }}
+        data-tauri-drag-region
+      >
+        {/* App Icon/Logo */}
+        <div style={{ width: '40px', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ color: '#569cd6', fontWeight: 'bold', fontSize: '11px' }}>CTR</span>
+        </div>
+
+        {/* Menu items */}
+        <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
           {Object.keys(menus).map((menuName) => (
-            <div key={menuName}>
-              <button
-                ref={(el) => buttonRefs.current[menuName] = el}
-                onClick={() => handleMenuClick(menuName)}
-                className={`px-2 py-1 text-[13px] text-[#CCCCCC] hover:bg-[#3E3E42] rounded transition-colors ${activeMenu === menuName ? 'bg-[#3E3E42]' : ''
-                  }`}
-              >
-                {menuName}
-              </button>
-            </div>
+            <button
+              key={menuName}
+              ref={(el) => { buttonRefs.current[menuName] = el; }}
+              onClick={() => handleMenuClick(menuName)}
+              style={{
+                padding: '0 10px',
+                height: '100%',
+                fontSize: '13px',
+                color: '#cccccc',
+                background: activeMenu === menuName ? '#505050' : 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+              onMouseEnter={(e) => { if (activeMenu !== menuName) e.currentTarget.style.background = '#4a4a4a'; }}
+              onMouseLeave={(e) => { if (activeMenu !== menuName) e.currentTarget.style.background = 'transparent'; }}
+            >
+              {menuName}
+            </button>
           ))}
         </div>
 
-        {/* Center - Navigation and Search */}
-        <div className="flex items-center gap-2 flex-1 max-w-xl mx-4">
-          <div className="flex items-center gap-1">
-            <button className="p-1 text-[#858585] hover:text-[#CCCCCC] hover:bg-[#3E3E42] rounded">
-              <ChevronLeft size={16} />
-            </button>
-            <button className="p-1 text-[#858585] hover:text-[#CCCCCC] hover:bg-[#3E3E42] rounded">
-              <ChevronRight size={16} />
-            </button>
-          </div>
-
-          <div className="flex-1 flex items-center gap-2 bg-[#3C3C3C] rounded px-3 py-1 text-[13px]">
-            <Search size={14} className="text-[#858585]" />
-            <input type="text"
-              placeholder="CTR Terminal"
-              className="bg-transparent border-none outline-none text-[#CCCCCC] placeholder-[#858585] flex-1"
-            />
-          </div>
+        {/* Center - Draggable title area */}
+        <div
+          style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          data-tauri-drag-region
+        >
+          <span style={{ fontSize: '12px', color: '#999999', pointerEvents: 'none' }}>
+            CTR - Cyber Threat Range IDE
+          </span>
         </div>
 
-        {/* Right side - Hacker Mode Toggle and Window controls */}
-        <div className="flex items-center gap-2">
+        {/* Right side - Hacker Mode + Window Controls */}
+        <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
           <HackerModeToggle />
-          <button className="w-12 h-full flex items-center justify-center text-[#CCCCCC] hover:bg-[#3E3E42]">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
-              <rect x="0" y="5" width="12" height="2" />
+
+          {/* Minimize */}
+          <button
+            onClick={() => getCurrentWindow().minimize()}
+            style={{
+              width: '46px',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#cccccc',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = '#505050'}
+            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+            title="Minimize"
+          >
+            <svg width="10" height="1" viewBox="0 0 10 1">
+              <rect fill="currentColor" width="10" height="1" />
             </svg>
           </button>
-          <button className="w-12 h-full flex items-center justify-center text-[#CCCCCC] hover:bg-[#3E3E42]">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
-              <rect x="0" y="0" width="10" height="10" fill="none" stroke="currentColor" strokeWidth="1" />
+
+          {/* Maximize */}
+          <button
+            onClick={async () => {
+              const win = getCurrentWindow();
+              if (await win.isMaximized()) {
+                win.unmaximize();
+              } else {
+                win.maximize();
+              }
+            }}
+            style={{
+              width: '46px',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#cccccc',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = '#505050'}
+            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+            title="Maximize"
+          >
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <rect x="0" y="0" width="10" height="10" stroke="currentColor" strokeWidth="1" />
             </svg>
           </button>
-          <button className="w-12 h-full flex items-center justify-center text-[#CCCCCC] hover:bg-[#E81123] hover:text-white">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
-              <path d="M1 1 L11 11 M11 1 L1 11" stroke="currentColor" strokeWidth="1.5" fill="none" />
+
+          {/* Close */}
+          <button
+            onClick={() => getCurrentWindow().close()}
+            style={{
+              width: '46px',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#cccccc',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#e81123'; e.currentTarget.style.color = '#ffffff'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#cccccc'; }}
+            title="Close"
+          >
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <path d="M0.5 0.5L9.5 9.5M9.5 0.5L0.5 9.5" stroke="currentColor" strokeWidth="1.2" />
             </svg>
           </button>
         </div>

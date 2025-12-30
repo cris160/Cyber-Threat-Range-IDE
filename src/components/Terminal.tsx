@@ -1,6 +1,7 @@
 import { ChevronUp, X, Terminal as TerminalIcon, Plus, ChevronDown, Trash2, AlertCircle } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { invoke } from '@tauri-apps/api/core';
+import { GlassPanel } from './ui/GlassPanel';
 
 interface TerminalProps {
   isExpanded: boolean;
@@ -236,6 +237,7 @@ export function Terminal({ isExpanded, onToggle, height, onHeightChange, externa
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsDragging(true);
+    // document.body.style.cursor = 'row-resize';
   };
 
   const handleMouseMove = (e: MouseEvent) => {
@@ -252,6 +254,7 @@ export function Terminal({ isExpanded, onToggle, height, onHeightChange, externa
 
   const handleMouseUp = () => {
     setIsDragging(false);
+    // document.body.style.cursor = 'default';
   };
 
   useEffect(() => {
@@ -267,30 +270,30 @@ export function Terminal({ isExpanded, onToggle, height, onHeightChange, externa
 
   if (!isExpanded) {
     return (
-      <div className="h-8 bg-[#252526] border-t border-[#2D2D30] flex items-center justify-between px-4">
+      <GlassPanel className="h-8 !border-t border-white/5 flex items-center justify-between px-4 !bg-[#1E1E1E]/90 !rounded-none">
         <div className="flex items-center gap-2 text-[13px] text-[#CCCCCC]">
           <TerminalIcon size={16} />
           <span>Terminal</span>
         </div>
         <button
           onClick={onToggle}
-          className="text-[#CCCCCC] hover:bg-[#2A2D2E] p-1 rounded"
+          className="text-[#CCCCCC] hover:bg-[#2A2D2E] p-1 rounded transition-colors"
         >
           <ChevronUp size={16} />
         </button>
-      </div>
+      </GlassPanel>
     );
   }
 
   if (!activeSession) {
     if (terminalError) {
       return (
-        <div className="h-32 bg-[#252526] border-t border-[#2D2D30] flex flex-col items-center justify-center px-4">
+        <GlassPanel className="h-32 !border-t border-white/5 flex flex-col items-center justify-center px-4 !rounded-none">
           <div className="flex items-center gap-2 text-[13px] text-red-400 mb-2">
             <AlertCircle size={16} />
             <span>Terminal failed to initialize</span>
           </div>
-          <div className="text-[11px] text-[#858585] text-center max-w-md mb-3 font-mono bg-[#1E1E1E] p-2 rounded">
+          <div className="text-[11px] text-[#858585] text-center max-w-md mb-3 font-mono bg-black/30 p-2 rounded">
             {terminalError}
           </div>
           <div className="text-[10px] text-[#656565] text-center max-w-md mb-3">
@@ -305,45 +308,48 @@ export function Terminal({ isExpanded, onToggle, height, onHeightChange, externa
           >
             Retry
           </button>
-        </div>
+        </GlassPanel>
       );
     }
 
     return (
-      <div className="h-8 bg-[#252526] border-t border-[#2D2D30] flex items-center justify-center px-4">
+      <GlassPanel className="h-8 !border-t border-white/5 flex items-center justify-center px-4 !rounded-none">
         <div className="flex items-center gap-2 text-[13px] text-[#858585]">
           <TerminalIcon size={16} className="animate-pulse" />
           <span>Initializing terminal...</span>
         </div>
-      </div>
+      </GlassPanel>
     );
   }
 
   return (
-    <div className="bg-[#1E1E1E] border-t border-[#2D2D30] flex flex-col relative" style={{ height: `${height}px` }}>
+    <GlassPanel
+      className="flex flex-col relative !bg-[#1E1E1E]/90 !border-t border-white/5 !rounded-none backdrop-blur-md"
+      style={{ height: `${height}px` }}
+    >
       {/* Resize Handle */}
       <div
-        className="absolute top-0 left-0 right-0 h-1 cursor-row-resize hover:bg-[#007ACC] transition-colors z-10"
+        className="absolute top-0 left-0 right-0 h-1 cursor-row-resize hover:bg-[#00c8b4] transition-colors z-10 opacity-0 hover:opacity-100"
         onMouseDown={handleMouseDown}
       />
 
       {/* Terminal Header */}
-      <div className="flex items-center justify-between px-2 py-1 bg-[#252526] border-b border-[#2D2D30]">
+      <div className="flex items-center justify-between px-2 py-1 bg-black/20 border-b border-white/5">
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-2 text-[13px] text-white">
             <TerminalIcon size={16} />
-            <span>Terminal</span>
+            <span className="font-medium tracking-wide text-xs opacity-80">TERMINAL</span>
           </div>
 
           {/* Terminal Tabs */}
-          <div className="flex items-center gap-1 ml-2">
+          <div className="flex items-center gap-1 ml-4 border-l border-white/10 pl-2">
             {sessions.map(session => (
               <div
                 key={session.id}
                 onClick={() => setActiveSessionId(session.id)}
-                className={`flex items-center gap-2 px-3 py-1 text-[11px] rounded cursor-pointer transition-colors ${session.id === activeSessionId
-                  ? 'bg-[#1E1E1E] text-white'
-                  : 'text-[#858585] hover:text-[#CCCCCC] hover:bg-[#2A2D2E]'
+                className={`flex items-center gap-2 px-3 py-1 text-[11px] rounded cursor-pointer transition-all ${session.id === activeSessionId
+                  ? 'bg-white/10 text-white shadow-sm'
+                  : 'text-[#858585] hover:text-[#CCCCCC] hover:bg-white/5'
                   }`}
               >
                 <span>{session.name}</span>
@@ -353,7 +359,7 @@ export function Terminal({ isExpanded, onToggle, height, onHeightChange, externa
                       e.stopPropagation();
                       closeTerminal(session.id);
                     }}
-                    className="hover:text-white"
+                    className="hover:text-red-400 transition-colors"
                   >
                     <X size={12} />
                   </button>
@@ -364,7 +370,7 @@ export function Terminal({ isExpanded, onToggle, height, onHeightChange, externa
             {/* New Terminal Button */}
             <button
               onClick={createNewTerminal}
-              className="p-1 text-[#858585] hover:text-[#CCCCCC] hover:bg-[#2A2D2E] rounded"
+              className="p-1 text-[#858585] hover:text-[#fff] hover:bg-white/10 rounded transition-colors ml-1"
               title="New Terminal"
             >
               <Plus size={14} />
@@ -377,14 +383,14 @@ export function Terminal({ isExpanded, onToggle, height, onHeightChange, externa
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-[#CCCCCC] hover:bg-[#2A2D2E] p-1 rounded"
+              className="text-[#CCCCCC] hover:bg-white/10 p-1 rounded transition-colors"
               title="Terminal menu"
             >
               <ChevronDown size={16} />
             </button>
 
             {isMenuOpen && (
-              <div className="absolute top-full right-0 mt-1 w-48 bg-[#252526] border border-[#454545] shadow-lg rounded-md py-1 z-50">
+              <div className="absolute bottom-full right-0 mb-1 w-48 bg-[#252526] border border-[#454545] shadow-lg rounded-md py-1 z-50">
                 <button
                   onClick={() => {
                     createNewTerminal();
@@ -426,7 +432,7 @@ export function Terminal({ isExpanded, onToggle, height, onHeightChange, externa
 
           <button
             onClick={onToggle}
-            className="text-[#CCCCCC] hover:bg-[#2A2D2E] p-1 rounded"
+            className="text-[#CCCCCC] hover:bg-white/10 p-1 rounded transition-colors"
             title="Hide terminal"
           >
             <ChevronUp size={16} className="rotate-180" />
@@ -437,8 +443,9 @@ export function Terminal({ isExpanded, onToggle, height, onHeightChange, externa
       {/* Terminal Content */}
       <div
         ref={outputRef}
-        className="flex-1 overflow-y-auto p-3 font-mono text-[13px] bg-[#1E1E1E]"
+        className="flex-1 overflow-y-auto p-3 font-mono text-[13px] bg-transparent custom-scrollbar"
         onClick={() => inputRef.current?.focus()}
+        style={{ scrollbarWidth: 'thin', scrollbarColor: '#424242 transparent' }}
       >
         <pre className="text-[#CCCCCC] whitespace-pre-wrap break-words">
           {activeSession.buffer}
@@ -459,6 +466,6 @@ export function Terminal({ isExpanded, onToggle, height, onHeightChange, externa
           />
         </div>
       </div>
-    </div>
+    </GlassPanel>
   );
 }

@@ -9,7 +9,7 @@ import { MenuBar } from './components/MenuBar';
 import { AIChatbot } from './components/AIChatbot';
 import { GitPanel } from './components/GitPanel';
 import { SecurityPanel } from './components/SecurityPanel';
-import { SecurityChallengesPanel } from './components/SecurityChallengesPanel';
+
 import { DebugPanel } from './components/DebugPanel';
 import { NewFileDialog } from './components/dialogs/NewFileDialog';
 import { NewFolderDialog } from './components/dialogs/NewFolderDialog';
@@ -17,6 +17,10 @@ import { AboutDialog } from './components/dialogs/AboutDialog';
 import { MatrixRain } from './components/MatrixRain';
 import { ExploitPanel } from './components/ExploitPanel';
 import { SecurityDashboard } from './components/SecurityDashboard';
+import { ExtensionsPanel } from './components/ExtensionsPanel';
+import { SearchPanel } from './components/SearchPanel';
+import { SecurityToolsPanel } from './components/SecurityToolsPanel';
+import { ExploitProverPanel } from './components/ExploitProverPanel';
 import { useSecurity } from './contexts/SecurityContext';
 
 interface OpenFile {
@@ -30,7 +34,7 @@ export default function App() {
   const [activeFile, setActiveFile] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [isTerminalExpanded, setIsTerminalExpanded] = useState(true);
-  const [explorerWidth, setExplorerWidth] = useState(256);
+  const [explorerWidth, setExplorerWidth] = useState(350);
   const [terminalHeight, setTerminalHeight] = useState(256);
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [chatbotWidth, setChatbotWidth] = useState(256);
@@ -42,6 +46,8 @@ export default function App() {
   const [workspaceFolder, setWorkspaceFolder] = useState<string | null>(null);
   const [terminalCommand, setTerminalCommand] = useState<string | null>(null);
   const [saveFileCallback, setSaveFileCallback] = useState<(() => Promise<void>) | null>(null);
+  const [activeFileContent, setActiveFileContent] = useState<string>('');
+
 
   const { setWorkspacePath } = useSecurity();
 
@@ -167,6 +173,17 @@ export default function App() {
               onOpenFolder={handleOpenFolder}
             />
           )}
+          {activeTab === 'search' && (
+            <SearchPanel
+              width={explorerWidth}
+              onWidthChange={setExplorerWidth}
+              workspaceFolder={workspaceFolder}
+              onFileOpen={(path, line) => {
+                handleFileClick(path, path.split(/[/\\]/).pop() || path);
+                // TODO: Navigate to line
+              }}
+            />
+          )}
           {activeTab === 'dashboard' && (
             <SecurityDashboard />
           )}
@@ -178,7 +195,7 @@ export default function App() {
           )}
           {activeTab === 'source-control' && (
             <div style={{ width: `${explorerWidth}px` }} className="h-full">
-              <GitPanel currentPath={selectedFile ? selectedFile.split('/').slice(0, -1).join('/') : null} />
+              <GitPanel currentPath={workspaceFolder} />
             </div>
           )}
           {activeTab === 'security' && (
@@ -189,48 +206,69 @@ export default function App() {
               onWidthChange={setExplorerWidth}
             />
           )}
-          {activeTab === 'security-challenges' && (
-            <SecurityChallengesPanel
-              width={explorerWidth}
-            />
-          )}
+
           {activeTab === 'exploit' && (
             <ExploitPanel activeFile={activeFile} />
+          )}
+          {activeTab === 'security-tools' && (
+            <SecurityToolsPanel
+              width={explorerWidth}
+              onRunInTerminal={(cmd) => {
+                setTerminalCommand(cmd);
+                setIsTerminalExpanded(true);
+              }}
+            />
+          )}
+          {activeTab === 'extensions' && (
+            <ExtensionsPanel width={explorerWidth} onWidthChange={setExplorerWidth} />
+          )}
+          {activeTab === 'exploit-prover' && (
+            <ExploitProverPanel
+              width={explorerWidth}
+              activeFile={activeFile}
+              fileContent={activeFileContent}
+              workspacePath={workspaceFolder || undefined}
+            />
           )}
         </div>
 
         {/* Main Editor & Code Runner */}
         <div className="flex-1 flex overflow-hidden">
           {/* Editor Area */}
-          <div className="flex-1 flex flex-col overflow-hidden">
-            <CodeEditor
-              openFiles={openFiles}
-              activeFile={activeFile}
-              onFileClose={(path) => {
-                const newOpenFiles = openFiles.filter((f) => f.path !== path);
-                setOpenFiles(newOpenFiles);
-                if (path === activeFile) {
-                  if (newOpenFiles.length > 0) {
-                    setActiveFile(newOpenFiles[newOpenFiles.length - 1].path);
-                  } else {
-                    setActiveFile(null);
+          <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+            <div className="flex-1 min-h-0 overflow-hidden flex flex-col relative z-0">
+              <CodeEditor
+                openFiles={openFiles}
+                activeFile={activeFile}
+                onContentChange={setActiveFileContent}
+                onFileClose={(path) => {
+                  const newOpenFiles = openFiles.filter((f) => f.path !== path);
+                  setOpenFiles(newOpenFiles);
+                  if (path === activeFile) {
+                    if (newOpenFiles.length > 0) {
+                      setActiveFile(newOpenFiles[newOpenFiles.length - 1].path);
+                    } else {
+                      setActiveFile(null);
+                    }
                   }
-                }
-              }}
-              onFileSelect={setActiveFile}
-              onSaveReady={(saveFunc) => setSaveFileCallback(() => saveFunc)}
-            />
+                }}
+                onFileSelect={setActiveFile}
+                onSaveReady={(saveFunc) => setSaveFileCallback(() => saveFunc)}
+              />
+            </div>
 
             {/* Terminal */}
-            <Terminal
-              isExpanded={isTerminalExpanded}
-              onToggle={() => setIsTerminalExpanded(!isTerminalExpanded)}
-              height={terminalHeight}
-              onHeightChange={setTerminalHeight}
-              externalCommand={terminalCommand}
-              onCommandExecuted={() => setTerminalCommand(null)}
-              workspaceFolder={workspaceFolder}
-            />
+            <div className="flex-none relative z-50">
+              <Terminal
+                isExpanded={isTerminalExpanded}
+                onToggle={() => setIsTerminalExpanded(!isTerminalExpanded)}
+                height={terminalHeight}
+                onHeightChange={setTerminalHeight}
+                externalCommand={terminalCommand}
+                onCommandExecuted={() => setTerminalCommand(null)}
+                workspaceFolder={workspaceFolder}
+              />
+            </div>
           </div>
 
           {/* Code Runner Panel - slides in from right */}

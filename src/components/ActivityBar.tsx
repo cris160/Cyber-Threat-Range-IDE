@@ -1,4 +1,4 @@
-import { Files, Search, GitBranch, Bug, Package, Bot, Shield, ShieldAlert, Crosshair, LayoutDashboard } from 'lucide-react';
+import { Files, Search, GitBranch, Bug, Package, Bot, Shield, ShieldAlert, Crosshair, LayoutDashboard, Wrench } from 'lucide-react';
 
 interface ActivityBarProps {
   activeTab: string;
@@ -15,8 +15,9 @@ export function ActivityBar({ activeTab, onTabChange, isChatbotOpen, onChatbotTo
     { id: 'source-control', icon: GitBranch, label: 'Source Control' },
     { id: 'debug', icon: Bug, label: 'Debug' },
     { id: 'security', icon: Shield, label: 'Security Scan' },
-    { id: 'security-challenges', icon: ShieldAlert, label: 'Security Challenges' },
+    { id: 'exploit-prover', icon: ShieldAlert, label: 'Exploit Prover' },
     { id: 'exploit', icon: Crosshair, label: 'Exploit Simulator' },
+    { id: 'security-tools', icon: Wrench, label: 'Security Tools' },
     { id: 'extensions', icon: Package, label: 'Extensions' },
   ];
 

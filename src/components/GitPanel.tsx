@@ -1,6 +1,9 @@
-import { GitBranch, GitCommit, GitPullRequest, RefreshCw, Plus, AlertCircle } from 'lucide-react';
+import { GitBranch, GitCommit, GitPullRequest, RefreshCw, AlertCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { invoke } from '@tauri-apps/api/core';
+import { motion } from 'framer-motion';
+import { GlassPanel } from './ui/GlassPanel';
+import { PanelHeader, PanelButton, PanelSection } from './ui/PanelComponents';
 
 interface GitPanelProps {
   currentPath: string | null;
@@ -35,14 +38,14 @@ export function GitPanel({ currentPath }: GitPanelProps) {
 
   const loadGitStatus = async () => {
     if (!currentPath) return;
-    
+
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const gitStatus = await invoke<GitStatus>('git_status', { repoPath: currentPath });
       setStatus(gitStatus);
-      
+
       const gitLog = await invoke<GitCommitInfo[]>('git_log', { repoPath: currentPath, limit: 10 });
       setCommits(gitLog);
     } catch (err) {
@@ -81,23 +84,23 @@ export function GitPanel({ currentPath }: GitPanelProps) {
 
   const handleCommit = async () => {
     if (!currentPath || !commitMessage.trim() || selectedFiles.size === 0) return;
-    
+
     setIsLoading(true);
     setError(null);
-    
+
     try {
       // Stage selected files
-      await invoke('git_add', { 
-        repoPath: currentPath, 
-        paths: Array.from(selectedFiles) 
+      await invoke('git_add', {
+        repoPath: currentPath,
+        paths: Array.from(selectedFiles)
       });
-      
+
       // Commit
-      await invoke('git_commit', { 
-        repoPath: currentPath, 
-        message: commitMessage 
+      await invoke('git_commit', {
+        repoPath: currentPath,
+        message: commitMessage
       });
-      
+
       setCommitMessage('');
       setSelectedFiles(new Set());
       await loadGitStatus();
@@ -110,14 +113,14 @@ export function GitPanel({ currentPath }: GitPanelProps) {
 
   const handlePush = async () => {
     if (!currentPath) return;
-    
+
     setIsLoading(true);
     setError(null);
-    
+
     try {
-      const result = await invoke<string>('git_push', { 
+      const result = await invoke<string>('git_push', {
         repoPath: currentPath,
-        remoteName: null 
+        remoteName: null
       });
       alert(result);
       await loadGitStatus();
@@ -130,14 +133,14 @@ export function GitPanel({ currentPath }: GitPanelProps) {
 
   const handlePull = async () => {
     if (!currentPath) return;
-    
+
     setIsLoading(true);
     setError(null);
-    
+
     try {
-      const result = await invoke<string>('git_pull', { 
+      const result = await invoke<string>('git_pull', {
         repoPath: currentPath,
-        remoteName: null 
+        remoteName: null
       });
       alert(result);
       await loadGitStatus();
@@ -176,171 +179,201 @@ export function GitPanel({ currentPath }: GitPanelProps) {
   }
 
   return (
-    <div className="h-full flex flex-col bg-[#252526] text-white overflow-hidden">
+    <GlassPanel width={280}>
       {/* Header */}
-      <div className="p-3 border-b border-[#2D2D30]">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2 text-sm">
-            <GitBranch size={16} />
-            <span className="font-semibold">{status?.branch || 'main'}</span>
-          </div>
-          <button
+      <PanelHeader
+        title="Source Control"
+        icon={<GitBranch size={14} />}
+        iconColor="#f97316"
+        actions={
+          <motion.button
             onClick={loadGitStatus}
             disabled={isLoading}
-            className="p-1 hover:bg-[#2A2D2E] rounded disabled:opacity-50"
+            className="p-1 hover:bg-white/10 rounded disabled:opacity-50 transition-colors"
+            whileHover={{ rotate: 180 }}
+            transition={{ duration: 0.5 }}
           >
-            <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
-          </button>
-        </div>
-        
-        {status && (
-          <div className="flex gap-3 text-xs text-[#858585]">
-            {status.ahead > 0 && <span>↑{status.ahead}</span>}
-            {status.behind > 0 && <span>↓{status.behind}</span>}
-            {status.is_clean && <span className="text-green-500">Clean</span>}
-          </div>
-        )}
-      </div>
+            <RefreshCw size={12} className={`${isLoading ? 'animate-spin' : ''} text-[#888]`} />
+          </motion.button>
+        }
+      />
 
-      {/* Actions */}
-      <div className="flex gap-2 p-3 border-b border-[#2D2D30]">
-        <button
-          onClick={handlePull}
-          disabled={isLoading}
-          className="flex-1 flex items-center justify-center gap-2 px-3 py-1.5 bg-[#0E639C] hover:bg-[#1177BB] rounded text-sm disabled:opacity-50"
-        >
-          <GitPullRequest size={14} />
-          Pull
-        </button>
-        <button
-          onClick={handlePush}
-          disabled={isLoading || status?.is_clean}
-          className="flex-1 flex items-center justify-center gap-2 px-3 py-1.5 bg-[#0E639C] hover:bg-[#1177BB] rounded text-sm disabled:opacity-50"
-        >
-          <GitCommit size={14} />
-          Push
-        </button>
-      </div>
-
-      {error && (
-        <div className="p-3 bg-red-900/20 border-b border-red-800 text-red-400 text-xs">
-          {error}
+      {status && (
+        <div className="px-3 py-1 flex gap-3 text-[10px] text-[#888] border-b border-white/5 bg-white/5 backdrop-blur-sm">
+          {status.ahead > 0 && <span className="text-green-400">↑ {status.ahead} outgoing</span>}
+          {status.behind > 0 && <span className="text-blue-400">↓ {status.behind} incoming</span>}
+          {status.is_clean && <span className="text-emerald-400 flex items-center gap-1"><AlertCircle size={10} /> Working tree clean</span>}
         </div>
       )}
 
+      {/* Actions */}
+      <div className="flex gap-2 p-3 border-b border-white/5">
+        <PanelButton
+          onClick={handlePull}
+          disabled={isLoading}
+          className="flex-1"
+        >
+          <GitPullRequest size={14} className="mr-2" />
+          Pull
+        </PanelButton>
+        <PanelButton
+          onClick={handlePush}
+          disabled={isLoading || (status?.is_clean ?? false)}
+          className="flex-1"
+        >
+          <GitCommit size={14} className="mr-2" />
+          Push
+        </PanelButton>
+      </div>
+
+      {error && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          className="p-3 bg-red-500/10 border-b border-red-500/20 text-red-400 text-xs backdrop-blur-sm"
+        >
+          {error}
+        </motion.div>
+      )}
+
       {/* Changes */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto custom-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: '#424242 transparent' }}>
         {status && !status.is_clean && (
           <div className="p-3">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-xs font-semibold text-[#CCCCCC]">CHANGES</h3>
-              <button
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-[10px] font-bold text-[#666] uppercase tracking-wider">Changes</h3>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={handleStageAll}
-                className="text-xs text-[#0E639C] hover:underline"
+                className="text-[10px] text-[#00c8b4] hover:text-[#00e0c8] font-medium"
               >
                 Stage All
-              </button>
+              </motion.button>
             </div>
-            
-            {/* Modified files */}
-            {status.modified.map(file => (
-              <div
-                key={file}
-                className="flex items-center gap-2 py-1 text-sm hover:bg-[#2A2D2E] px-2 rounded cursor-pointer"
-                onClick={() => handleStageFile(file)}
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedFiles.has(file)}
-                  onChange={() => {}}
-                  className="w-4 h-4"
-                />
-                <span className="text-yellow-500 text-xs">M</span>
-                <span className="flex-1 truncate text-[#CCCCCC]">{file}</span>
-              </div>
-            ))}
-            
-            {/* Untracked files */}
-            {status.untracked.map(file => (
-              <div
-                key={file}
-                className="flex items-center gap-2 py-1 text-sm hover:bg-[#2A2D2E] px-2 rounded cursor-pointer"
-                onClick={() => handleStageFile(file)}
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedFiles.has(file)}
-                  onChange={() => {}}
-                  className="w-4 h-4"
-                />
-                <span className="text-green-500 text-xs">U</span>
-                <span className="flex-1 truncate text-[#CCCCCC]">{file}</span>
-              </div>
-            ))}
-            
-            {/* Deleted files */}
-            {status.deleted.map(file => (
-              <div
-                key={file}
-                className="flex items-center gap-2 py-1 text-sm hover:bg-[#2A2D2E] px-2 rounded cursor-pointer"
-                onClick={() => handleStageFile(file)}
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedFiles.has(file)}
-                  onChange={() => {}}
-                  className="w-4 h-4"
-                />
-                <span className="text-red-500 text-xs">D</span>
-                <span className="flex-1 truncate text-[#CCCCCC]">{file}</span>
-              </div>
-            ))}
+
+            <div className="space-y-1">
+              {/* Modified files */}
+              {status.modified.map(file => (
+                <motion.div
+                  key={file}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="group flex items-center gap-2 py-1.5 px-2 rounded hover:bg-white/5 cursor-pointer transition-colors"
+                  onClick={() => handleStageFile(file)}
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedFiles.has(file)}
+                    onChange={() => { }}
+                    className="w-3.5 h-3.5 rounded border-gray-600 bg-transparent checked:bg-[#00c8b4] checked:border-[#00c8b4] focus:ring-0 focus:ring-offset-0"
+                  />
+                  <span className="text-yellow-400 text-[10px] font-bold w-3">M</span>
+                  <span className="flex-1 truncate text-[#ccc] group-hover:text-white text-[11px]">{file}</span>
+                </motion.div>
+              ))}
+
+              {/* Untracked files */}
+              {status.untracked.map(file => (
+                <motion.div
+                  key={file}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="group flex items-center gap-2 py-1.5 px-2 rounded hover:bg-white/5 cursor-pointer transition-colors"
+                  onClick={() => handleStageFile(file)}
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedFiles.has(file)}
+                    onChange={() => { }}
+                    className="w-3.5 h-3.5 rounded border-gray-600 bg-transparent checked:bg-[#00c8b4] checked:border-[#00c8b4]"
+                  />
+                  <span className="text-emerald-400 text-[10px] font-bold w-3">U</span>
+                  <span className="flex-1 truncate text-[#ccc] group-hover:text-white text-[11px]">{file}</span>
+                </motion.div>
+              ))}
+
+              {/* Deleted files */}
+              {status.deleted.map(file => (
+                <motion.div
+                  key={file}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="group flex items-center gap-2 py-1.5 px-2 rounded hover:bg-white/5 cursor-pointer transition-colors"
+                  onClick={() => handleStageFile(file)}
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedFiles.has(file)}
+                    onChange={() => { }}
+                    className="w-3.5 h-3.5 rounded border-gray-600 bg-transparent checked:bg-[#00c8b4] checked:border-[#00c8b4]"
+                  />
+                  <span className="text-red-400 text-[10px] font-bold w-3">D</span>
+                  <span className="flex-1 truncate text-[#ccc] group-hover:text-white text-[11px] decoration-line-through opacity-70">{file}</span>
+                </motion.div>
+              ))}
+            </div>
           </div>
         )}
 
         {/* Commit section */}
         {selectedFiles.size > 0 && (
-          <div className="p-3 border-t border-[#2D2D30]">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-3 border-t border-white/5 bg-black/20"
+          >
             <textarea
               value={commitMessage}
               onChange={(e) => setCommitMessage(e.target.value)}
               placeholder="Commit message..."
-              className="w-full p-2 bg-[#1E1E1E] border border-[#2D2D30] rounded text-sm text-white resize-none"
+              className="w-full p-2.5 bg-[#1E1E1E]/50 border border-white/10 rounded-lg text-xs text-white resize-none focus:outline-none focus:border-[#00c8b4]/50 focus:ring-1 focus:ring-[#00c8b4]/20 transition-all placeholder:text-gray-600"
               rows={3}
+              style={{ backdropFilter: 'blur(4px)' }}
             />
-            <button
+            <PanelButton
               onClick={handleCommit}
               disabled={isLoading || !commitMessage.trim()}
-              className="mt-2 w-full flex items-center justify-center gap-2 px-3 py-2 bg-[#0E639C] hover:bg-[#1177BB] rounded text-sm disabled:opacity-50"
+              className="mt-2 w-full justify-center"
+              variant="primary"
             >
-              <GitCommit size={14} />
+              <GitCommit size={14} className="mr-2" />
               Commit {selectedFiles.size} file{selectedFiles.size !== 1 ? 's' : ''}
-            </button>
-          </div>
+            </PanelButton>
+          </motion.div>
         )}
 
         {/* Recent commits */}
         {commits.length > 0 && (
-          <div className="p-3 border-t border-[#2D2D30]">
-            <h3 className="text-xs font-semibold text-[#CCCCCC] mb-2">RECENT COMMITS</h3>
-            <div className="space-y-2">
+          <div className="p-3 border-t border-white/5">
+            <h3 className="text-[10px] font-bold text-[#666] uppercase tracking-wider mb-3">Recent Commits</h3>
+            <div className="space-y-3 relative before:absolute before:left-[5px] before:top-2 before:bottom-2 before:w-[1px] before:bg-white/10">
               {commits.slice(0, 5).map(commit => (
-                <div key={commit.hash} className="text-xs">
-                  <div className="flex items-start gap-2">
-                    <span className="text-[#858585] font-mono">{commit.hash.substring(0, 7)}</span>
+                <motion.div
+                  key={commit.hash}
+                  className="text-xs pl-4 relative"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  <div className="absolute left-[2px] top-[5px] w-[7px] h-[7px] rounded-full bg-[#00c8b4] border-[2px] border-[#252526]" />
+                  <div className="flex items-start gap-2 group cursor-default">
                     <div className="flex-1 min-w-0">
-                      <p className="text-white truncate">{commit.message}</p>
-                      <p className="text-[#858585] text-[10px] mt-0.5">
-                        {commit.author} • {new Date(commit.timestamp * 1000).toLocaleString()}
-                      </p>
+                      <p className="text-[#eee] group-hover:text-white truncate font-medium transition-colors">{commit.message}</p>
+                      <div className="flex items-center gap-2 mt-1 text-[10px] text-[#666]">
+                        <span className="font-mono text-[#00c8b4] bg-[#00c8b4]/10 px-1 rounded">{commit.hash.substring(0, 7)}</span>
+                        <span>•</span>
+                        <span>{commit.author}</span>
+                        <span>•</span>
+                        <span>{new Date(commit.timestamp * 1000).toLocaleDateString()}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
         )}
       </div>
-    </div>
+    </GlassPanel>
   );
 }

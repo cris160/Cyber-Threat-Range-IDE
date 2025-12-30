@@ -1,0 +1,214 @@
+﻿cargo :    Compiling app v0.1.0 (C:\Users\satyam prasad\Desktop\ctr1\ctr\src-tauri)
+At line:1 char:1
++ cargo test --lib integration_tests -- --nocapture 2>&1 | Out-File -En ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (   Compiling ap...\ctr\src-tauri):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+warning: unused import: `std::collections::HashMap`
+ --> src\services\exploit_sandbox.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused imports: `Command` and `Stdio`
+ --> src\services\exploit_sandbox.rs:3:20
+  |
+3 | use std::process::{Command, Stdio};
+  |                    ^^^^^^^  ^^^^^
+
+warning: unused import: `std::time::Duration`
+ --> src\services\exploit_sandbox.rs:4:5
+  |
+4 | use std::time::Duration;
+  |     ^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `PathNode`
+  --> src\analysis\prover.rs:11:52
+   |
+11 |     AnalysisResult, ExploitStatus, Sink, SinkType, PathNode,
+   |                                                    ^^^^^^^^
+
+warning: unused imports: `SymbolKind` and `Symbol`
+  --> src\analysis\mod.rs:14:35
+   |
+14 | pub use indexer::{ProjectIndexer, Symbol, SymbolKind};
+   |                                   ^^^^^^  ^^^^^^^^^^
+
+warning: unused import: `HashMap`
+ --> src\analysis\cross_slicer.rs:8:24
+  |
+8 | use std::collections::{HashMap, HashSet};
+  |                        ^^^^^^^
+
+warning: unused import: `Symbol`
+  --> src\analysis\cross_slicer.rs:11:38
+   |
+11 | use super::indexer::{ProjectIndexer, Symbol, SymbolKind};
+   |                                      ^^^^^^
+
+warning: unused import: `ValueSource`
+  --> src\analysis\cross_slicer.rs:12:37
+   |
+12 | use super::slicer::{BackwardSlicer, ValueSource};
+   |                                     ^^^^^^^^^^^
+
+warning: unused imports: `PathNode` and `SinkType`
+  --> src\analysis\cross_slicer.rs:13:19
+   |
+13 | use super::{Sink, SinkType, PathNode};
+   |                   ^^^^^^^^  ^^^^^^^^
+
+warning: unused imports: `CrossFileAnalysisResult` and `CrossFileFlow`
+  --> src\analysis\mod.rs:17:41
+   |
+17 | pub use cross_slicer::{CrossFileSlicer, CrossFileAnalysisResult, CrossFileFlow};
+   |                                         ^^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^
+
+warning: unused import: `Path`
+ --> src\analysis\integration_tests.rs:4:17
+  |
+4 | use std::path::{Path, PathBuf};
+  |                 ^^^^
+
+error[E0599]: no method named `find_node_at_line` found for mutable reference `&mut slicer::BackwardSlicer` in the current scope
+   --> src\analysis\slicer.rs:358:49
+    |
+358 |             let code = if let Some(node) = self.find_node_at_line(source, def.line) {
+    |                                                 ^^^^^^^^^^^^^^^^^ method not found in `&mut slicer::BackwardSlicer`
+
+error[E0308]: mismatched types
+   --> src\analysis\slicer.rs:360:50
+    |
+360 |                  let text = self.node_text(node, source);
+    |                                  ---------       ^^^^^^ expected `&[u8]`, found `&str`
+    |                                  |
+    |                                  arguments to this method are incorrect
+    |
+    = note: expected reference `&[u8]`
+               found reference `&str`
+note: method defined here
+   --> src\analysis\slicer.rs:397:8
+    |
+397 |     fn node_text(&self, node: Node, source: &[u8]) -> String {
+    |        ^^^^^^^^^                    -------------
+
+warning: unused import: `Read`
+ --> src\api\extension_cmds.rs:4:22
+  |
+4 | use std::io::{Write, Read};
+  |                      ^^^^
+
+warning: value assigned to `output` is never read
+   --> src\api\code_runner.rs:161:22
+    |
+161 |     let mut output = String::new();
+    |                      ^^^^^^^^^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+
+warning: value assigned to `exit_code` is never read
+   --> src\api\code_runner.rs:163:25
+    |
+163 |     let mut exit_code = None;
+    |                         ^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: unused variable: `process_id_stdout`
+   --> src\api\interactive_runner.rs:112:9
+    |
+112 |     let process_id_stdout = process_id.clone();
+    |         ^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_process_id_stdout`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `process_id_stderr`
+   --> src\api\interactive_runner.rs:131:9
+    |
+131 |     let process_id_stderr = process_id.clone();
+    |         ^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_process_id_stderr`
+
+warning: value assigned to `impact_description` is never read
+   --> src\services\exploit_sandbox.rs:156:34
+    |
+156 |     let mut impact_description = String::new();
+    |                                  ^^^^^^^^^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: value assigned to `risk_score` is never read
+   --> src\services\exploit_sandbox.rs:158:30
+    |
+158 |     let mut risk_score: u8 = 0;
+    |                              ^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: unused variable: `target_module`
+   --> src\analysis\indexer.rs:289:29
+    |
+289 |                         let target_module = if import.is_from_import {
+    |                             ^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_target_module`
+
+warning: unused variable: `result`
+  --> src\analysis\integration_tests.rs:83:9
+   |
+83 |     let result = analyze_file("tests/integration_targets/ecommerce_api.py");
+   |         ^^^^^^ help: if this is intentional, prefix it with an underscore: `_result`
+
+warning: unused variable: `result`
+   --> src\analysis\integration_tests.rs:125:9
+    |
+125 |     let result = analyze_file("tests/integration_targets/system_admin_tool.py");
+    |         ^^^^^^ help: if this is intentional, prefix it with an underscore: `_result`
+
+warning: unused variable: `result`
+   --> src\analysis\integration_tests.rs:155:9
+    |
+155 |     let result = analyze_workspace("tests/integration_targets/data_processor", "main.py");
+    |         ^^^^^^ help: if this is intentional, prefix it with an underscore: `_result`
+
+warning: unused variable: `result`
+   --> src\analysis\integration_tests.rs:213:9
+    |
+213 |     let result = analyze_file("tests/integration_targets/complex_logic.py");
+    |         ^^^^^^ help: if this is intentional, prefix it with an underscore: `_result`
+
+warning: unused variable: `result`
+   --> src\analysis\integration_tests.rs:232:9
+    |
+232 |     let result = analyze_file("tests/integration_targets/sanitization_patterns.py");
+    |         ^^^^^^ help: if this is intentional, prefix it with an underscore: `_result`
+
+warning: unused variable: `result`
+   --> src\analysis\integration_tests.rs:260:9
+    |
+260 |     let result = analyze_file("tests/integration_targets/solver_challenge.py");
+    |         ^^^^^^ help: if this is intentional, prefix it with an underscore: `_result`
+
+warning: unused variable: `result`
+   --> src\analysis\integration_tests.rs:269:9
+    |
+269 |     let result = analyze_file("tests/integration_targets/solver_challenge.py");
+    |         ^^^^^^ help: if this is intentional, prefix it with an underscore: `_result`
+
+warning: unused variable: `result`
+   --> src\analysis\integration_tests.rs:509:9
+    |
+509 |     let result = analyze_file("tests/integration_targets/path_traversal.py");
+    |         ^^^^^^ help: if this is intentional, prefix it with an underscore: `_result`
+
+warning: unused variable: `result`
+   --> src\analysis\integration_tests.rs:543:9
+    |
+543 |     let result = analyze_file("tests/integration_targets/complex_context.py");
+    |         ^^^^^^ help: if this is intentional, prefix it with an underscore: `_result`
+
+Some errors have detailed explanations: E0308, E0599.
+For more information about an error, try `rustc --explain E0308`.
+warning: `app` (lib test) generated 28 warnings
+error: could not compile `app` (lib test) due to 2 previous errors; 28 warnings emitted

@@ -2,6 +2,9 @@ import { ChevronRight, ChevronDown, Folder, FileCode, FileText, MoreVertical, Fi
 import { useState, useEffect } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { NewFileDialog, NewFolderDialog, DeleteDialog, RenameDialog } from './dialogs';
+import { GlassPanel } from './ui/GlassPanel';
+import { PanelHeader } from './ui/PanelComponents';
+import { ResizeHandle } from './ResizeHandle';
 
 interface FileNode {
   name: string;
@@ -46,7 +49,7 @@ function FileTreeItem({ node, level, onFileClick, selectedFile, onToggle, expand
 
   const getFileIcon = (extension?: string) => {
     if (!extension) return <FileText size={16} className="text-[#858585]" />;
-    
+
     switch (extension.toLowerCase()) {
       case 'js':
       case 'jsx':
@@ -126,11 +129,10 @@ function FileTreeItem({ node, level, onFileClick, selectedFile, onToggle, expand
     <button
       onClick={() => onFileClick(node.path, node.name)}
       onContextMenu={(e) => onContextMenu(node, e)}
-      className={`w-full flex items-center gap-2 px-2 py-0.5 text-left text-[13px] transition-colors ${
-        isSelected
+      className={`w-full flex items-center gap-2 px-2 py-0.5 text-left text-[13px] transition-colors ${isSelected
           ? 'bg-[#37373D] text-white'
           : 'text-[#CCCCCC] hover:bg-[#2A2D2E]'
-      }`}
+        }`}
       style={{ paddingLeft: `${level * 12 + 24}px` }}
     >
       {getFileIcon(node.extension)}
@@ -156,12 +158,11 @@ interface ContextMenu {
 
 export function FileExplorer({ onFileClick, selectedFile, width, onWidthChange, workspaceFolder, onOpenFolder }: FileExplorerProps) {
   const [showMenu, setShowMenu] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
   const [rootPath, setRootPath] = useState<string | null>(null);
   const [fileTree, setFileTree] = useState<FileNode[]>([]);
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // Dialog states
   const [contextMenu, setContextMenu] = useState<ContextMenu | null>(null);
   const [showNewFileDialog, setShowNewFileDialog] = useState(false);
@@ -212,6 +213,15 @@ export function FileExplorer({ onFileClick, selectedFile, width, onWidthChange, 
       console.error('Failed to load directory:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleResize = (delta: number) => {
+    if (onWidthChange) {
+      const newWidth = width + delta;
+      if (newWidth >= 200 && newWidth <= 600) {
+        onWidthChange(newWidth);
+      }
     }
   };
 
@@ -281,134 +291,115 @@ export function FileExplorer({ onFileClick, selectedFile, width, onWidthChange, 
     }
   };
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
+  const MenuActions = (
+    <div className="relative">
+      <button
+        onClick={() => setShowMenu(!showMenu)}
+        className="p-1 rounded hover:bg-white/10 opacity-60 hover:opacity-100 transition-opacity"
+      >
+        <MoreVertical size={14} />
+      </button>
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (isDragging) {
-      const newWidth = e.clientX - 48;
-      if (newWidth >= 200 && newWidth <= 600) {
-        onWidthChange(newWidth);
-      }
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  useEffect(() => {
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
-  }, [isDragging]);
+      {showMenu && (
+        <>
+          <div
+            className="fixed inset-0 z-10"
+            onClick={() => setShowMenu(false)}
+          />
+          <div className="absolute right-0 top-6 z-20 w-56 bg-[#3C3C3C] border border-[#454545] rounded shadow-lg py-1 text-[13px] normal-case">
+            <button
+              onClick={() => {
+                onOpenFolder();
+                setShowMenu(false);
+              }}
+              className="w-full flex items-center gap-3 px-3 py-1.5 hover:bg-[#2A2D2E] text-left text-[#CCCCCC]"
+            >
+              <FolderOpen size={14} />
+              <span>Open Folder...</span>
+            </button>
+            <div className="border-t border-[#454545] my-1" />
+            <button
+              onClick={() => {
+                setTargetPath(rootPath || '');
+                setShowNewFileDialog(true);
+                setShowMenu(false);
+              }}
+              className="w-full flex items-center gap-3 px-3 py-1.5 hover:bg-[#2A2D2E] text-left text-[#CCCCCC]"
+            >
+              <FilePlus size={14} />
+              <span>New File...</span>
+            </button>
+            <button
+              onClick={() => {
+                setTargetPath(rootPath || '');
+                setShowNewFolderDialog(true);
+                setShowMenu(false);
+              }}
+              className="w-full flex items-center gap-3 px-3 py-1.5 hover:bg-[#2A2D2E] text-left text-[#CCCCCC]"
+            >
+              <FolderPlus size={14} />
+              <span>New Folder...</span>
+            </button>
+            <div className="border-t border-[#454545] my-1" />
+            <button
+              onClick={() => {
+                handleRefresh();
+                setShowMenu(false);
+              }}
+              className="w-full flex items-center gap-3 px-3 py-1.5 hover:bg-[#2A2D2E] text-left text-[#CCCCCC]"
+            >
+              <RefreshCw size={14} />
+              <span>Refresh Explorer</span>
+            </button>
+            <button
+              onClick={() => {
+                setExpandedFolders(new Set());
+                setShowMenu(false);
+              }}
+              className="w-full flex items-center gap-3 px-3 py-1.5 hover:bg-[#2A2D2E] text-left text-[#CCCCCC]"
+            >
+              <FolderTree size={14} />
+              <span>Collapse Folders in Explorer</span>
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
 
   return (
     <>
-      <div className="bg-[#252526] border-r border-[#2D2D30] flex flex-col h-full relative" style={{ width: `${width}px` }}>
-        <div className="px-3 py-2 text-[11px] text-[#CCCCCC] uppercase tracking-wide flex items-center justify-between group">
-          <span>{workspaceFolder ? workspaceFolder.split(/[/\\]/).pop() : 'Explorer'}</span>
-          <div className="relative">
-            <button
-              onClick={() => setShowMenu(!showMenu)}
-              className="p-1 rounded hover:bg-[#2A2D2E] opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              <MoreVertical size={14} />
-            </button>
-            
-            {showMenu && (
-              <>
-                <div 
-                  className="fixed inset-0 z-10" 
-                  onClick={() => setShowMenu(false)}
-                />
-                <div className="absolute right-0 top-6 z-20 w-56 bg-[#3C3C3C] border border-[#454545] rounded shadow-lg py-1 text-[13px] normal-case">
-                  <button 
-                    onClick={() => {
-                      onOpenFolder();
-                      setShowMenu(false);
-                    }}
-                    className="w-full flex items-center gap-3 px-3 py-1.5 hover:bg-[#2A2D2E] text-left text-[#CCCCCC]"
-                  >
-                    <FolderOpen size={14} />
-                    <span>Open Folder...</span>
-                  </button>
-                  <div className="border-t border-[#454545] my-1" />
-                  <button 
-                    onClick={() => {
-                      setTargetPath(rootPath || '');
-                      setShowNewFileDialog(true);
-                      setShowMenu(false);
-                    }}
-                    className="w-full flex items-center gap-3 px-3 py-1.5 hover:bg-[#2A2D2E] text-left text-[#CCCCCC]"
-                  >
-                    <FilePlus size={14} />
-                    <span>New File...</span>
-                  </button>
-                  <button 
-                    onClick={() => {
-                      setTargetPath(rootPath || '');
-                      setShowNewFolderDialog(true);
-                      setShowMenu(false);
-                    }}
-                    className="w-full flex items-center gap-3 px-3 py-1.5 hover:bg-[#2A2D2E] text-left text-[#CCCCCC]"
-                  >
-                    <FolderPlus size={14} />
-                    <span>New Folder...</span>
-                  </button>
-                  <div className="border-t border-[#454545] my-1" />
-                  <button 
-                    onClick={() => {
-                      handleRefresh();
-                      setShowMenu(false);
-                    }}
-                    className="w-full flex items-center gap-3 px-3 py-1.5 hover:bg-[#2A2D2E] text-left text-[#CCCCCC]"
-                  >
-                    <RefreshCw size={14} />
-                    <span>Refresh Explorer</span>
-                  </button>
-                  <button 
-                    onClick={() => {
-                      setExpandedFolders(new Set());
-                      setShowMenu(false);
-                    }}
-                    className="w-full flex items-center gap-3 px-3 py-1.5 hover:bg-[#2A2D2E] text-left text-[#CCCCCC]"
-                  >
-                    <FolderTree size={14} />
-                    <span>Collapse Folders in Explorer</span>
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
+      <GlassPanel width={width}>
+        {/* Header */}
+        <PanelHeader
+          title={workspaceFolder ? workspaceFolder.split(/[/\\]/).pop() || 'Explorer' : 'Explorer'}
+          icon={<Folder size={14} />}
+          iconColor="#DCAD60"
+          actions={MenuActions}
+        />
 
-        <div className="px-3 py-1 text-[11px] text-[#858585] border-b border-[#2D2D30] truncate">
+        <div className="px-3 py-1 text-[11px] text-[#858585] border-b border-white/5 truncate bg-black/10">
           {rootPath || 'No folder open'}
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: 'thin', scrollbarColor: '#424242 transparent' }}>
           {!workspaceFolder ? (
             <div className="flex flex-col items-center justify-center h-full text-[#858585] text-[12px] p-4 text-center">
               <FolderOpen size={48} className="mb-4 opacity-50" />
               <p className="mb-2">No folder opened</p>
               <button
                 onClick={onOpenFolder}
-                className="mt-2 px-4 py-2 bg-[#0E639C] hover:bg-[#1177BB] text-white rounded text-[13px]"
+                className="mt-2 px-4 py-2 bg-[#0E639C] hover:bg-[#1177BB] text-white rounded text-[13px] transition-colors"
               >
                 Open Folder
               </button>
             </div>
           ) : isLoading ? (
             <div className="flex items-center justify-center h-32 text-[#858585] text-[12px]">
-              Loading...
+              <div className="flex items-center gap-2">
+                <RefreshCw size={14} className="animate-spin" />
+                <span>Loading...</span>
+              </div>
             </div>
           ) : fileTree.length === 0 ? (
             <div className="flex items-center justify-center h-32 text-[#858585] text-[12px]">
@@ -430,11 +421,8 @@ export function FileExplorer({ onFileClick, selectedFile, width, onWidthChange, 
           )}
         </div>
 
-        <div
-          className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize bg-[#2D2D30]"
-          onMouseDown={handleMouseDown}
-        />
-      </div>
+        <ResizeHandle direction="horizontal" onResize={handleResize} />
+      </GlassPanel>
 
       {/* Context Menu */}
       {contextMenu && (
@@ -442,14 +430,14 @@ export function FileExplorer({ onFileClick, selectedFile, width, onWidthChange, 
           className="fixed z-30 w-56 bg-[#3C3C3C] border border-[#454545] rounded shadow-lg py-1 text-[13px]"
           style={{ left: contextMenu.x, top: contextMenu.y }}
         >
-          <button 
+          <button
             onClick={handleNewFile}
             className="w-full flex items-center gap-3 px-3 py-1.5 hover:bg-[#2A2D2E] text-left text-[#CCCCCC]"
           >
             <FilePlus size={14} />
             <span>New File...</span>
           </button>
-          <button 
+          <button
             onClick={handleNewFolder}
             className="w-full flex items-center gap-3 px-3 py-1.5 hover:bg-[#2A2D2E] text-left text-[#CCCCCC]"
           >
@@ -457,14 +445,14 @@ export function FileExplorer({ onFileClick, selectedFile, width, onWidthChange, 
             <span>New Folder...</span>
           </button>
           <div className="border-t border-[#454545] my-1" />
-          <button 
+          <button
             onClick={handleRename}
             className="w-full flex items-center gap-3 px-3 py-1.5 hover:bg-[#2A2D2E] text-left text-[#CCCCCC]"
           >
             <Edit size={14} />
             <span>Rename...</span>
           </button>
-          <button 
+          <button
             onClick={handleDelete}
             className="w-full flex items-center gap-3 px-3 py-1.5 hover:bg-[#2A2D2E] text-left text-red-400"
           >
@@ -481,14 +469,14 @@ export function FileExplorer({ onFileClick, selectedFile, width, onWidthChange, 
         currentPath={targetPath}
         onSuccess={handleRefresh}
       />
-      
+
       <NewFolderDialog
         isOpen={showNewFolderDialog}
         onClose={() => setShowNewFolderDialog(false)}
         currentPath={targetPath}
         onSuccess={handleRefresh}
       />
-      
+
       {selectedNode && (
         <>
           <DeleteDialog
@@ -502,7 +490,7 @@ export function FileExplorer({ onFileClick, selectedFile, width, onWidthChange, 
             itemType={selectedNode.type}
             onSuccess={handleRefresh}
           />
-          
+
           <RenameDialog
             isOpen={showRenameDialog}
             onClose={() => {

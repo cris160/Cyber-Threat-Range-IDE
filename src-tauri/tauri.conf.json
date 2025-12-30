@@ -13,10 +13,12 @@
     "windows": [
       {
         "title": "CTR",
-        "width": 800,
-        "height": 600,
+        "width": 1280,
+        "height": 800,
         "resizable": true,
-        "fullscreen": true
+        "fullscreen": false,
+        "decorations": false,
+        "center": true
       }
     ],
     "security": {
@@ -36,6 +38,9 @@
   },
   "plugins": {
     "dialog": null,
-    "log": null
+    "log": null,
+    "shell": {
+      "open": true
+    }
   }
 }

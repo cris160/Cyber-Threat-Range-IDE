@@ -7,3 +7,6 @@ pub mod code_runner;
 pub mod interactive_runner;
 pub mod security_cmds;
 pub mod exploit_cmds;
+pub mod extension_cmds;
+pub mod search_cmds;
+pub mod prover_cmds;

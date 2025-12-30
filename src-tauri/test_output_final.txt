@@ -1,0 +1,632 @@
+﻿cargo :    Compiling app v0.1.0 (C:\Users\satyam prasad\Desktop\ctr1\ctr\src-tauri)
+At line:1 char:1
++ cargo test --lib integration_tests -- --nocapture 2>&1 | Out-File -En ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (   Compiling ap...\ctr\src-tauri):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+warning: unused import: `std::collections::HashMap`
+ --> src\services\exploit_sandbox.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused imports: `Command` and `Stdio`
+ --> src\services\exploit_sandbox.rs:3:20
+  |
+3 | use std::process::{Command, Stdio};
+  |                    ^^^^^^^  ^^^^^
+
+warning: unused import: `std::time::Duration`
+ --> src\services\exploit_sandbox.rs:4:5
+  |
+4 | use std::time::Duration;
+  |     ^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `PathNode`
+  --> src\analysis\prover.rs:11:52
+   |
+11 |     AnalysisResult, ExploitStatus, Sink, SinkType, PathNode,
+   |                                                    ^^^^^^^^
+
+warning: unused imports: `SymbolKind` and `Symbol`
+  --> src\analysis\mod.rs:14:35
+   |
+14 | pub use indexer::{ProjectIndexer, Symbol, SymbolKind};
+   |                                   ^^^^^^  ^^^^^^^^^^
+
+warning: unused import: `HashMap`
+ --> src\analysis\cross_slicer.rs:8:24
+  |
+8 | use std::collections::{HashMap, HashSet};
+  |                        ^^^^^^^
+
+warning: unused import: `Symbol`
+  --> src\analysis\cross_slicer.rs:11:38
+   |
+11 | use super::indexer::{ProjectIndexer, Symbol, SymbolKind};
+   |                                      ^^^^^^
+
+warning: unused import: `ValueSource`
+  --> src\analysis\cross_slicer.rs:12:37
+   |
+12 | use super::slicer::{BackwardSlicer, ValueSource};
+   |                                     ^^^^^^^^^^^
+
+warning: unused imports: `PathNode` and `SinkType`
+  --> src\analysis\cross_slicer.rs:13:19
+   |
+13 | use super::{Sink, SinkType, PathNode};
+   |                   ^^^^^^^^  ^^^^^^^^
+
+warning: unused imports: `CrossFileAnalysisResult` and `CrossFileFlow`
+  --> src\analysis\mod.rs:17:41
+   |
+17 | pub use cross_slicer::{CrossFileSlicer, CrossFileAnalysisResult, CrossFileFlow};
+   |                                         ^^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^
+
+warning: unused import: `Path`
+ --> src\analysis\integration_tests.rs:4:17
+  |
+4 | use std::path::{Path, PathBuf};
+  |                 ^^^^
+
+warning: unused import: `Read`
+ --> src\api\extension_cmds.rs:4:22
+  |
+4 | use std::io::{Write, Read};
+  |                      ^^^^
+
+warning: value assigned to `output` is never read
+   --> src\api\code_runner.rs:161:22
+    |
+161 |     let mut output = String::new();
+    |                      ^^^^^^^^^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+
+warning: value assigned to `exit_code` is never read
+   --> src\api\code_runner.rs:163:25
+    |
+163 |     let mut exit_code = None;
+    |                         ^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: unused variable: `process_id_stdout`
+   --> src\api\interactive_runner.rs:112:9
+    |
+112 |     let process_id_stdout = process_id.clone();
+    |         ^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_process_id_stdout`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `process_id_stderr`
+   --> src\api\interactive_runner.rs:131:9
+    |
+131 |     let process_id_stderr = process_id.clone();
+    |         ^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_process_id_stderr`
+
+warning: value assigned to `impact_description` is never read
+   --> src\services\exploit_sandbox.rs:156:34
+    |
+156 |     let mut impact_description = String::new();
+    |                                  ^^^^^^^^^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: value assigned to `risk_score` is never read
+   --> src\services\exploit_sandbox.rs:158:30
+    |
+158 |     let mut risk_score: u8 = 0;
+    |                              ^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: unused variable: `target_module`
+   --> src\analysis\indexer.rs:289:29
+    |
+289 |                         let target_module = if import.is_from_import {
+    |                             ^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_target_module`
+
+warning: unused variable: `result`
+  --> src\analysis\integration_tests.rs:83:9
+   |
+83 |     let result = analyze_file("tests/integration_targets/ecommerce_api.py");
+   |         ^^^^^^ help: if this is intentional, prefix it with an underscore: `_result`
+
+warning: unused variable: `result`
+   --> src\analysis\integration_tests.rs:125:9
+    |
+125 |     let result = analyze_file("tests/integration_targets/system_admin_tool.py");
+    |         ^^^^^^ help: if this is intentional, prefix it with an underscore: `_result`
+
+warning: unused variable: `result`
+   --> src\analysis\integration_tests.rs:155:9
+    |
+155 |     let result = analyze_workspace("tests/integration_targets/data_processor", "main.py");
+    |         ^^^^^^ help: if this is intentional, prefix it with an underscore: `_result`
+
+warning: unused variable: `result`
+   --> src\analysis\integration_tests.rs:213:9
+    |
+213 |     let result = analyze_file("tests/integration_targets/complex_logic.py");
+    |         ^^^^^^ help: if this is intentional, prefix it with an underscore: `_result`
+
+warning: unused variable: `result`
+   --> src\analysis\integration_tests.rs:232:9
+    |
+232 |     let result = analyze_file("tests/integration_targets/sanitization_patterns.py");
+    |         ^^^^^^ help: if this is intentional, prefix it with an underscore: `_result`
+
+warning: unused variable: `result`
+   --> src\analysis\integration_tests.rs:260:9
+    |
+260 |     let result = analyze_file("tests/integration_targets/solver_challenge.py");
+    |         ^^^^^^ help: if this is intentional, prefix it with an underscore: `_result`
+
+warning: unused variable: `result`
+   --> src\analysis\integration_tests.rs:269:9
+    |
+269 |     let result = analyze_file("tests/integration_targets/solver_challenge.py");
+    |         ^^^^^^ help: if this is intentional, prefix it with an underscore: `_result`
+
+warning: unused variable: `result`
+   --> src\analysis\integration_tests.rs:509:9
+    |
+509 |     let result = analyze_file("tests/integration_targets/path_traversal.py");
+    |         ^^^^^^ help: if this is intentional, prefix it with an underscore: `_result`
+
+warning: unused variable: `result`
+   --> src\analysis\integration_tests.rs:543:9
+    |
+543 |     let result = analyze_file("tests/integration_targets/complex_context.py");
+    |         ^^^^^^ help: if this is intentional, prefix it with an underscore: `_result`
+
+warning: field `status` is never read
+  --> src\api\security_cmds.rs:34:5
+   |
+33 | struct JuiceShopResponse {
+   |        ----------------- field in this struct
+34 |     status: String,
+   |     ^^^^^^
+   |
+   = note: `JuiceShopResponse` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `ExtensionManifest` is never constructed
+  --> src\api\extension_cmds.rs:55:12
+   |
+55 | pub struct ExtensionManifest {
+   |            ^^^^^^^^^^^^^^^^^
+
+warning: field `file_path` is never read
+  --> src\api\prover_cmds.rs:16:9
+   |
+10 | pub struct AnalyzeRequest {
+   |            -------------- field in this struct
+...
+16 |     pub file_path: Option<String>,
+   |         ^^^^^^^^^
+   |
+   = note: `AnalyzeRequest` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: constant `PATH_SINKS` is never used
+  --> src\analysis\python_parser.rs:35:7
+   |
+35 | const PATH_SINKS: &[&str] = &[
+   |       ^^^^^^^^^^
+
+warning: constant `FASTAPI_ENTRY_POINTS` is never used
+  --> src\analysis\slicer.rs:22:7
+   |
+22 | const FASTAPI_ENTRY_POINTS: &[&str] = &[
+   |       ^^^^^^^^^^^^^^^^^^^^
+
+warning: field `name` is never read
+  --> src\analysis\slicer.rs:36:9
+   |
+35 | pub struct VariableDefinition {
+   |            ------------------ field in this struct
+36 |     pub name: String,
+   |         ^^^^
+   |
+   = note: `VariableDefinition` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code 
+analysis
+
+warning: variant `Unknown` is never constructed
+  --> src\analysis\slicer.rs:54:5
+   |
+44 | pub enum ValueSource {
+   |          ----------- variant in this enum
+...
+54 |     Unknown,
+   |     ^^^^^^^
+   |
+   = note: `ValueSource` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+
+warning: field `name` is never read
+  --> src\analysis\indexer.rs:16:9
+   |
+15 | pub struct Symbol {
+   |            ------ field in this struct
+16 |     pub name: String,
+   |         ^^^^
+   |
+   = note: `Symbol` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+
+warning: variant `Variable` is never constructed
+  --> src\analysis\indexer.rs:27:5
+   |
+24 | pub enum SymbolKind {
+   |          ---------- variant in this enum
+...
+27 |     Variable,
+   |     ^^^^^^^^
+   |
+   = note: `SymbolKind` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+
+warning: method `get_file_imports` is never used
+   --> src\analysis\indexer.rs:321:12
+    |
+ 56 | impl ProjectIndexer {
+    | ------------------- method in this implementation
+...
+321 |     pub fn get_file_imports(&self, file_path: &Path) -> Option<&Vec<ImportStatement>> {
+    |            ^^^^^^^^^^^^^^^^
+
+warning: field `is_entry_point` is never read
+  --> src\analysis\cross_slicer.rs:51:9
+   |
+46 | pub struct CrossFilePathNode {
+   |            ----------------- field in this struct
+...
+51 |     pub is_entry_point: bool,
+   |         ^^^^^^^^^^^^^^
+   |
+   = note: `CrossFilePathNode` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code 
+analysis
+
+warning: structure field `totalSize` should have a snake case name
+  --> src\api\extension_cmds.rs:10:9
+   |
+10 |     pub totalSize: i32,
+   |         ^^^^^^^^^ help: convert the identifier to snake case: `total_size`
+   |
+   = note: `#[warn(non_snake_case)]` (part of `#[warn(nonstandard_style)]`) on by default
+
+warning: structure field `displayName` should have a snake case name
+  --> src\api\extension_cmds.rs:21:9
+   |
+21 |     pub displayName: Option<String>,
+   |         ^^^^^^^^^^^ help: convert the identifier to snake case: `display_name`
+
+warning: structure field `downloadCount` should have a snake case name
+  --> src\api\extension_cmds.rs:23:9
+   |
+23 |     pub downloadCount: Option<i64>,
+   |         ^^^^^^^^^^^^^ help: convert the identifier to snake case: `download_count`
+
+warning: structure field `averageRating` should have a snake case name
+  --> src\api\extension_cmds.rs:24:9
+   |
+24 |     pub averageRating: Option<f64>,
+   |         ^^^^^^^^^^^^^ help: convert the identifier to snake case: `average_rating`
+
+warning: structure field `reviewCount` should have a snake case name
+  --> src\api\extension_cmds.rs:25:9
+   |
+25 |     pub reviewCount: Option<i64>,
+   |         ^^^^^^^^^^^ help: convert the identifier to snake case: `review_count`
+
+warning: comparison is useless due to type limits
+   --> src\analysis\prover.rs:777:17
+    |
+777 |         assert!(result.analysis_time_ms >= 0);
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(unused_comparisons)]` on by default
+
+warning: `app` (lib test) generated 45 warnings (run `cargo fix --lib -p app --tests` to apply 23 suggestions)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.65s
+     Running unittests src\lib.rs (target\debug\deps\app_lib-6940983ed6f48b3a.exe)
+
+running 58 tests
+Warning: Failed to index "C:\\Users\\satyam prasad\\Desktop\\ctr1\\ctr\\src-tauri\\..\\tests/integration_targets/data_processor\\__init__.py": 
+stream did not contain valid UTF-8
+Warning: Failed to index "C:\\Users\\satyam prasad\\Desktop\\ctr1\\ctr\\src-tauri\\..\\tests/integration_targets/data_processor\\__init__.py": 
+stream did not contain valid UTF-8
+test analysis::integration_tests::test_complex_conditional_taint ... ok
+test analysis::integration_tests::test_deser_marshal ... ok
+test analysis::integration_tests::test_cmdi_popen_unsafe ... ok
+test analysis::integration_tests::test_deser_yaml ... ok
+test analysis::integration_tests::test_cmdi_subprocess_popen_shell_true ... ok
+test analysis::integration_tests::test_cmdi_getstatusoutput_unsafe ... ok
+
+thread 'analysis::integration_tests::test_path_remove' (19992) panicked at src\analysis\integration_tests.rs:500:5:
+assertion failed: result.sinks.iter().any(|s|
+        s.sink_type == super::SinkType::PathTraversal &&
+                s.code_snippet.contains("os.remove") &&
+            s.tainted_vars.contains(&"f".to_string()))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test analysis::integration_tests::test_complex_loop_safe_sanitization ... ok
+test analysis::integration_tests::test_ctx_lambda_taint ... ok
+test analysis::integration_tests::test_data_proc_main_to_utils_call ... ok
+test analysis::integration_tests::test_deser_pickle ... ok
+test analysis::integration_tests::test_cmdi_getoutput_unsafe ... ok
+test analysis::integration_tests::test_complex_loop_accumulation ... ok
+test analysis::integration_tests::test_ctx_return_tuple ... ok
+test analysis::integration_tests::test_path_remove ... FAILED
+test analysis::integration_tests::test_data_proc_tainted_argument_propagation ... ok
+
+thread 'analysis::integration_tests::test_flow_tuple_unpacking' (23236) panicked at src\analysis\integration_tests.rs:424:5:
+assertion failed: result.sinks.iter().any(|s|
+        s.code_snippet.contains("os.system") &&
+            s.code_snippet.contains("touch"))
+test analysis::integration_tests::test_flow_dict_access ... ok
+test analysis::integration_tests::test_flow_tuple_unpacking ... FAILED
+test analysis::integration_tests::test_ctx_class_attr_flow ... ok
+
+thread 'analysis::integration_tests::test_path_send_file' (20324) panicked at src\analysis\integration_tests.rs:490:5:
+assertion failed: result.sinks.iter().any(|s|
+        s.sink_type == super::SinkType::PathTraversal &&
+                s.code_snippet.contains("send_file") &&
+            s.tainted_vars.contains(&"f".to_string()))
+test analysis::integration_tests::test_flow_try_except_taint ... ok
+test analysis::integration_tests::test_path_send_file ... FAILED
+
+thread 'analysis::integration_tests::test_path_open_read' (53664) panicked at src\analysis\integration_tests.rs:471:5:
+assertion failed: result.sinks.iter().any(|s|
+        s.sink_type == super::SinkType::PathTraversal &&
+                s.code_snippet.contains("open") &&
+            s.tainted_vars.contains(&"filename".to_string()))
+
+thread 'analysis::integration_tests::test_path_join_unsafe' (47172) panicked at src\analysis\integration_tests.rs:481:5:
+assertion failed: result.sinks.iter().any(|s|
+        s.code_snippet.contains("open") &&
+            s.tainted_vars.contains(&"full_path".to_string()))
+
+thread 'analysis::integration_tests::test_ctx_import_alias' (54440) panicked at src\analysis\integration_tests.rs:569:5:
+assertion failed: result.sinks.iter().any(|s| s.code_snippet.contains("system_ops.system"))
+test analysis::integration_tests::test_sanitization_whitelist ... ok
+test analysis::integration_tests::test_ctx_nested_list ... ok
+test analysis::integration_tests::test_path_safe_basename ... ok
+test analysis::integration_tests::test_flow_if_branch_taint ... ok
+test analysis::integration_tests::test_ctx_list_comp ... ok
+test analysis::integration_tests::test_path_open_read ... FAILED
+test analysis::integration_tests::test_path_join_unsafe ... FAILED
+test analysis::integration_tests::test_ctx_dict_comp ... ok
+test analysis::integration_tests::test_flow_list_access ... ok
+test analysis::integration_tests::test_ctx_import_alias ... FAILED
+test analysis::integration_tests::test_ctx_closure_taint ... ok
+test analysis::integration_tests::test_complex_recursion_taint ... ok
+test analysis::integration_tests::test_ctx_map_taint ... ok
+test analysis::integration_tests::test_ctx_fstring_complex ... ok
+test analysis::integration_tests::test_re_search ... ok
+test analysis::integration_tests::test_re_findall ... ok
+test analysis::integration_tests::test_re_sub ... ok
+test analysis::integration_tests::test_re_match ... ok
+test analysis::integration_tests::test_re_compile ... ok
+test analysis::integration_tests::test_solver_string_challenge ... ok
+test analysis::integration_tests::test_solver_math_challenge ... ok
+test analysis::integration_tests::test_sanitization_int_cast ... ok
+test analysis::integration_tests::test_ssrf_requests ... ok
+test analysis::integration_tests::test_ssrf_urllib ... ok
+test analysis::integration_tests::test_xxe_lxml ... ok
+test analysis::integration_tests::test_sysadmin_cmdi_os_system ... ok
+test analysis::integration_tests::test_sysadmin_cmdi_subprocess_shell_true ... ok
+test analysis::integration_tests::test_sysadmin_safe_subprocess_shell_false ... ok
+test analysis::integration_tests::test_sysadmin_shlex_quote_safe ... ok
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 3 column 31: unknown constant base_query")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 3 column 31: unknown constant base_query")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 3 column 31: unknown constant base_query")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 3 column 31: unknown constant base_query")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+test analysis::integration_tests::test_ecommerce_safe_parameterized_query ... ok
+test analysis::integration_tests::test_ecommerce_sqli_entry_point_detection ... ok
+test analysis::integration_tests::test_ecommerce_sqli_class_method_tainted ... ok
+test analysis::integration_tests::test_ecommerce_fstring_taint ... ok
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+test analysis::integration_tests::test_sqli_string_concatenation ... ok
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+test analysis::integration_tests::test_sqli_executemany_unsafe ... ok
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+test analysis::integration_tests::test_sqli_percent_formatting ... ok
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+test analysis::integration_tests::test_sqli_aug_assign_concat ... ok
+Z3 Verification Failed: Z3 Error: ERROR: b'(error "line 8 column 52: unknown constant .format")\n(error "line 8 column 70: unexpected 
+character")\n(error "line 8 column 72: unexpected character")\n(error "line 8 column 73: unexpected character")\n(error "line 8 column 75: 
+unexpected character")\n(error "line 9 column 50: unexpected character")\n(error "line 9 column 51: unexpected character")\n(error "line 10 
+column 57: unknown constant %")\n(error "line 11 column 56: unexpected character")\n(error "line 13 column 17: no arguments supplied to 
+arithmetical operator")\n(error "line 14 column 17: no arguments supplied to arithmetical operator")\n'
+
+Stderr: 
+test analysis::integration_tests::test_sqli_format_function ... ok
+
+failures:
+
+failures:
+    analysis::integration_tests::test_ctx_import_alias
+    analysis::integration_tests::test_flow_tuple_unpacking
+    analysis::integration_tests::test_path_join_unsafe
+    analysis::integration_tests::test_path_open_read
+    analysis::integration_tests::test_path_remove
+    analysis::integration_tests::test_path_send_file
+
+test result: FAILED. 52 passed; 6 failed; 0 ignored; 0 measured; 128 filtered out; finished in 1.16s
+
+error: test failed, to rerun pass `--lib`

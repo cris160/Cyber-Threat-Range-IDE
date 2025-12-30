@@ -1,8 +1,9 @@
-import { X, Save } from 'lucide-react';
+import { X, Save, FileCode } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import Editor, { Monaco } from '@monaco-editor/react';
 import type { editor } from 'monaco-editor';
+import { GlassPanel } from './ui/GlassPanel';
 
 interface CodeEditorProps {
   openFiles: Array<{ path: string; name: string }>;
@@ -10,6 +11,7 @@ interface CodeEditorProps {
   onFileClose: (filePath: string) => void;
   onFileSelect: (filePath: string) => void;
   onSaveReady?: (saveFunc: () => Promise<void>) => void;
+  onContentChange?: (content: string) => void;
 }
 
 type SecuritySeverity = 'Low' | 'Medium' | 'High';
@@ -24,7 +26,7 @@ interface FileSecurityScanResult {
   issues: FileSecurityIssue[];
 }
 
-export function CodeEditor({ openFiles, activeFile, onFileClose, onFileSelect, onSaveReady }: CodeEditorProps) {
+export function CodeEditor({ openFiles, activeFile, onFileClose, onFileSelect, onSaveReady, onContentChange }: CodeEditorProps) {
   const [fileContents, setFileContents] = useState<Map<string, string>>(new Map());
   const [editedContents, setEditedContents] = useState<Map<string, string>>(new Map());
   const [isSaving, setIsSaving] = useState(false);
@@ -32,11 +34,18 @@ export function CodeEditor({ openFiles, activeFile, onFileClose, onFileSelect, o
   const monacoRef = useRef<Monaco | null>(null);
 
   const activeFileData = openFiles.find(f => f.path === activeFile);
-  const content = editedContents.has(activeFile || '') 
+  const content = editedContents.has(activeFile || '')
     ? editedContents.get(activeFile || '') || ''
     : fileContents.get(activeFile || '') || '';
 
   const hasUnsavedChanges = activeFile && editedContents.has(activeFile);
+
+  // Notify parent of content changes
+  useEffect(() => {
+    if (onContentChange) {
+      onContentChange(content);
+    }
+  }, [content, onContentChange]);
 
   // Load file contents
   useEffect(() => {
@@ -73,10 +82,10 @@ export function CodeEditor({ openFiles, activeFile, onFileClose, onFileSelect, o
         path: activeFile,
         content: editedContents.get(activeFile)
       });
-      
+
       // Update the saved content
       setFileContents(prev => new Map(prev).set(activeFile, editedContents.get(activeFile)!));
-      
+
       // Clear the edited content
       setEditedContents(prev => {
         const newMap = new Map(prev);
@@ -200,45 +209,44 @@ export function CodeEditor({ openFiles, activeFile, onFileClose, onFileSelect, o
   };
 
   return (
-    <div className="flex-1 bg-[#1E1E1E] flex flex-col">
+    <GlassPanel className="flex-1 flex flex-col h-full overflow-hidden !bg-[#1E1E1E]/80 !border-0 rounded-none">
       {/* Tabs */}
-      <div className="flex bg-[#252526] border-b border-[#2D2D30] items-center">
-        <div className="flex flex-1 overflow-x-auto">
+      <div className="flex bg-[#252526]/50 border-b border-white/5 items-center backdrop-blur-sm">
+        <div className="flex flex-1 overflow-x-auto custom-scrollbar" style={{ scrollbarWidth: 'none' }}>
           {openFiles.map((file) => (
             <div
               key={file.path}
-              className={`flex items-center gap-2 px-4 py-2 text-[13px] border-r border-[#2D2D30] cursor-pointer group flex-shrink-0 ${
-                activeFile === file.path
-                  ? 'bg-[#1E1E1E] text-white'
-                  : 'text-[#969696] hover:bg-[#2A2D2E]'
-              }`}
+              className={`flex items-center gap-2 px-4 py-2 text-[13px] border-r border-white/5 cursor-pointer group flex-shrink-0 transition-colors ${activeFile === file.path
+                ? 'bg-[#1E1E1E]/80 text-white border-t-2 border-t-[#00c8b4]'
+                : 'text-[#969696] hover:bg-white/5'
+                }`}
               onClick={() => onFileSelect(file.path)}
             >
               <span className="truncate max-w-[150px]">{file.name}</span>
               {editedContents.has(file.path) && (
-                <span className="text-white">●</span>
+                <span className="text-[#00c8b4] text-[10px]">●</span>
               )}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onFileClose(file.path);
                 }}
-                className="opacity-0 group-hover:opacity-100 hover:bg-[#3E3E42] rounded p-0.5 transition-opacity"
+                className="opacity-0 group-hover:opacity-100 hover:bg-white/10 rounded p-0.5 transition-opacity"
               >
                 <X size={14} />
               </button>
             </div>
           ))}
         </div>
-        
+
         {hasUnsavedChanges && (
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="flex items-center gap-2 px-4 py-2 text-[13px] text-[#CCCCCC] hover:bg-[#2A2D2E] border-l border-[#2D2D30] disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 text-[13px] text-[#CCCCCC] hover:bg-[#2A2D2E] border-l border-white/5 disabled:opacity-50"
             title="Save (Ctrl+S)"
           >
-            <Save size={14} />
+            <Save size={14} className={isSaving ? 'animate-pulse' : ''} />
             <span>{isSaving ? 'Saving...' : 'Save'}</span>
           </button>
         )}
@@ -246,13 +254,13 @@ export function CodeEditor({ openFiles, activeFile, onFileClose, onFileSelect, o
 
       {/* Breadcrumbs */}
       {activeFileData && (
-        <div className="flex items-center gap-2 px-4 py-1.5 text-[12px] text-[#CCCCCC] bg-[#1E1E1E] border-b border-[#2D2D30]">
-          <span className="text-[#858585] truncate">{activeFileData.path}</span>
+        <div className="flex items-center gap-2 px-4 py-1.5 text-[12px] text-[#CCCCCC] bg-black/20 border-b border-white/5">
+          <span className="text-[#858585] truncate font-mono">{activeFileData.path}</span>
         </div>
       )}
 
       {/* Monaco Editor */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden relative">
         {activeFileData ? (
           <Editor
             height="100%"
@@ -264,43 +272,38 @@ export function CodeEditor({ openFiles, activeFile, onFileClose, onFileSelect, o
             options={{
               fontSize: 13,
               fontFamily: "'Consolas', 'Courier New', monospace",
-              lineHeight: 19,
+              lineHeight: 20,
               minimap: {
                 enabled: true,
+                scale: 0.75,
+                renderCharacters: false
               },
               scrollBeyondLastLine: false,
               automaticLayout: true,
               tabSize: 2,
               insertSpaces: true,
               wordWrap: 'off',
-              renderWhitespace: 'selection',
-              suggestOnTriggerCharacters: true,
-              quickSuggestions: true,
-              formatOnPaste: true,
-              formatOnType: true,
-              autoIndent: 'full',
-              bracketPairColorization: {
-                enabled: true,
-              },
-              guides: {
-                bracketPairs: true,
-                indentation: true,
-              },
+              padding: { top: 16, bottom: 16 },
               cursorBlinking: 'smooth',
               cursorSmoothCaretAnimation: 'on',
               smoothScrolling: true,
               mouseWheelZoom: true,
+              guides: {
+                indentation: true,
+                bracketPairs: true
+              }
             }}
           />
         ) : (
           <div className="flex items-center justify-center h-full text-[#858585]">
-            <div className="text-center">
-              <p className="text-[14px] font-medium">No file selected</p>
-              <p className="text-[11px] mt-2">Select a file from the Explorer to view its contents</p>
+            <div className="text-center p-8 rounded-xl bg-white/5 border border-white/5 backdrop-blur-sm">
+              <FileCode size={48} strokeWidth={1} className="mx-auto mb-4 opacity-50" />
+              <p className="text-[14px] font-medium text-[#ccc]">No file selected</p>
+              <p className="text-[11px] mt-2 text-[#888]">Select a file from the Explorer to start coding</p>
             </div>
           </div>
         )}
       </div>
-    </div>
+    </GlassPanel>
   );
 }

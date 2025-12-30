@@ -170,78 +170,64 @@ pub async fn git_add(repo_path: String, paths: Vec<String>) -> Result<(), String
     Ok(())
 }
 
-/// Push changes to remote
+/// Push changes to remote using system git (for authentication support)
 #[tauri::command]
 pub async fn git_push(repo_path: String, remote_name: Option<String>) -> Result<String, String> {
+    let remote = remote_name.unwrap_or_else(|| "origin".to_string());
+    
+    // Get current branch using git2 (for display)
     let repo = Repository::open(&repo_path)
         .map_err(|e| format!("Failed to open repository: {}", e))?;
-    
-    let remote_name = remote_name.unwrap_or_else(|| "origin".to_string());
-    
-    let mut remote = repo.find_remote(&remote_name)
-        .map_err(|e| format!("Failed to find remote '{}': {}", remote_name, e))?;
-    
     let head = repo.head()
         .map_err(|e| format!("Failed to get HEAD: {}", e))?;
     let branch = head.shorthand()
-        .ok_or_else(|| "Not on a branch".to_string())?;
+        .ok_or_else(|| "Not on a branch".to_string())?
+        .to_string();
     
-    let refspec = format!("refs/heads/{}:refs/heads/{}", branch, branch);
+    // Use system git for push (leverages user's credentials)
+    let output = std::process::Command::new("git")
+        .args(["push", &remote, &branch])
+        .current_dir(&repo_path)
+        .output()
+        .map_err(|e| format!("Failed to run git push: {}", e))?;
     
-    remote.push(&[&refspec], None)
-        .map_err(|e| format!("Failed to push: {}", e))?;
-    
-    Ok(format!("Pushed to {}/{}", remote_name, branch))
+    if output.status.success() {
+        Ok(format!("Pushed to {}/{}", remote, branch))
+    } else {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        // Git often writes success messages to stderr
+        if stderr.contains("->") || stdout.contains("->") {
+            Ok(format!("Pushed to {}/{}", remote, branch))
+        } else {
+            Err(format!("Push failed: {}{}", stderr, stdout))
+        }
+    }
 }
 
-/// Pull changes from remote
+/// Pull changes from remote using system git (for authentication support)
 #[tauri::command]
 pub async fn git_pull(repo_path: String, remote_name: Option<String>) -> Result<String, String> {
-    let repo = Repository::open(&repo_path)
-        .map_err(|e| format!("Failed to open repository: {}", e))?;
+    let remote = remote_name.unwrap_or_else(|| "origin".to_string());
     
-    let remote_name = remote_name.unwrap_or_else(|| "origin".to_string());
+    // Use system git for pull (leverages user's credentials)
+    let output = std::process::Command::new("git")
+        .args(["pull", &remote])
+        .current_dir(&repo_path)
+        .output()
+        .map_err(|e| format!("Failed to run git pull: {}", e))?;
     
-    let mut remote = repo.find_remote(&remote_name)
-        .map_err(|e| format!("Failed to find remote '{}': {}", remote_name, e))?;
-    
-    // Fetch
-    remote.fetch(&[] as &[&str], None, None)
-        .map_err(|e| format!("Failed to fetch: {}", e))?;
-    
-    let head = repo.head()
-        .map_err(|e| format!("Failed to get HEAD: {}", e))?;
-    let branch = head.shorthand()
-        .ok_or_else(|| "Not on a branch".to_string())?;
-    
-    // Get remote branch
-    let remote_branch = format!("{}/{}", remote_name, branch);
-    let remote_ref = repo.find_reference(&format!("refs/remotes/{}", remote_branch))
-        .map_err(|e| format!("Failed to find remote branch: {}", e))?;
-    let remote_commit = remote_ref.peel_to_commit()
-        .map_err(|e| format!("Failed to get remote commit: {}", e))?;
-    
-    // Fast-forward merge (simple pull)
-    let local_commit = head.peel_to_commit()
-        .map_err(|e| format!("Failed to get local commit: {}", e))?;
-    
-    if repo.graph_descendant_of(remote_commit.id(), local_commit.id())
-        .map_err(|e| format!("Failed to check ancestry: {}", e))? {
-        // Already up to date
-        return Ok("Already up to date".to_string());
+    if output.status.success() {
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        if stdout.contains("Already up to date") || stdout.contains("Already up-to-date") {
+            Ok("Already up to date".to_string())
+        } else {
+            Ok(format!("Pulled from {}", remote))
+        }
+    } else {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        Err(format!("Pull failed: {}", stderr))
     }
-    
-    // Update reference
-    let mut reference = head.resolve()
-        .map_err(|e| format!("Failed to resolve HEAD: {}", e))?;
-    reference.set_target(remote_commit.id(), "pull: Fast-forward")
-        .map_err(|e| format!("Failed to update HEAD: {}", e))?;
-    
-    // Checkout
-    repo.checkout_head(Some(git2::build::CheckoutBuilder::new().force()))
-        .map_err(|e| format!("Failed to checkout: {}", e))?;
-    
-    Ok(format!("Pulled from {}/{}", remote_name, branch))
 }
 
 /// Get list of branches
